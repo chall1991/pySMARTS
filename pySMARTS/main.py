@@ -2705,7 +2705,7 @@ def _smartsAll(CMNT, ISPR, SPR, ALTIT, HEIGHT, LATIT, IATMOS, ATMOS, RH, TAIR, S
         print('Could not find SMARTS2 executable.')
         data = None
     else:
-        p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=open("output.txt", "w"), shell=True)
+        p = subprocess.Popen((os.path.join(os.environ['SMARTSPATH'],command), stdin=subprocess.PIPE, stdout=open("output.txt", "w"), shell=True)
         p.wait()
         
         ## Read SMARTS 2.9.5 Output File
