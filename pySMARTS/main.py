@@ -38,7 +38,8 @@ def IOUT_to_code(IOUT):
 
      '''
 
-    IOUT_map = { 'Extraterrestrial spectrum W m-2':     '1', 
+    IOUT_map = { 
+            'Extraterrestrial spectrum W m-2':     '1', 
             'Direct normal irradiance W m-2':     '2',
             'Diffuse horizontal irradiance W m-2':     '3',
             'Global horizontal irradiance W m-2':     '4',
@@ -90,7 +91,6 @@ def IOUT_to_code(IOUT):
         return None
     return IOUT_map.get(IOUT)
 
-    
 def _material_to_code(material):
     # Comments include Description, File name(.DAT extension), Reflection, Type*, Spectral range(um), Category*
     # *KEYS: L Lambertian, NL Non-Lambertian, SP Specular, M Manmade materials, S Soils and rocks, U User defined, V Vegetation, W Water, snow, or ice
@@ -170,7 +170,8 @@ def _material_to_code(material):
         return None
     return material_map.get(material)
 
-def SMARTSTimeLocation(IOUT,YEAR,MONTH,DAY,HOUR, LATIT, LONGIT, ALTIT, ZONE, material='LiteSoil', min_wvl='280', max_wvl='4000'):
+
+def SMARTSTimeLocation(ELEV, AZIM, IOUT, YEAR, MONTH, DAY, HOUR, LATIT, LONGIT, ALTIT, HEIGHT, ZONE, material='LiteSoil', min_wvl='280', max_wvl='4000'):
     r'''
     This function calculates the spectral albedo for a given material. If no 
     material is provided, the function will return a list of all valid 
@@ -220,7 +221,7 @@ def SMARTSTimeLocation(IOUT,YEAR,MONTH,DAY,HOUR, LATIT, LONGIT, ALTIT, ZONE, mat
     # ISPR = 0 to input SPR on Card 2a
     # ISPR = 1 to input SPR, ALTIT and HEIGHT on Card 2a
     # ISPR = 2 to input LATIT, ALTIT and HEIGHT on Card 2a.
-    ISPR = '1'
+    ISPR = '2'
     
     # Card 2a (if ISPR = 0): SPR
     SPR = '1013.25' #mbar
@@ -245,8 +246,8 @@ def SMARTSTimeLocation(IOUT,YEAR,MONTH,DAY,HOUR, LATIT, LONGIT, ALTIT, ZONE, mat
     # must be <= 100 km.
     
     ALTIT = ALTIT
-    HEIGHT = '0'
-    #LATIT = LATIT 
+    HEIGHT = HEIGHT
+    LATIT = LATIT
     
     ## Card 3: IATMOS is an option to select the proper default atmosphere
     # Its value can be either 0 or 1.
@@ -260,8 +261,8 @@ def SMARTSTimeLocation(IOUT,YEAR,MONTH,DAY,HOUR, LATIT, LONGIT, ALTIT, ZONE, mat
     # Card 3a (if IATMOS = 1): ATMOS
     # ATMOS is the name of the selected reference atmosphere; 4 characters max. This name can
     # be one of the following: 
-    #    USSA   (U.S. Standard Atmosphere)   MLS   (Mid-Latitude Summer) 
-    #    MLW   (Mid-Latitude Winter)   SAS   (Sub-Arctic Summer) 
+    #   USSA   (U.S. Standard Atmosphere)   MLS   (Mid-Latitude Summer) 
+    #   MLW   (Mid-Latitude Winter)   SAS   (Sub-Arctic Summer) 
     #   SAW   (Sub-Arctic Winter)   TRL   (Tropical)   STS   (Sub-Tropical Summer)
     #   STW   (Sub-Tropical Winter)   AS   (Arctic Summer)   AW   (Arctic Winter)
     
@@ -570,15 +571,15 @@ def SMARTSTimeLocation(IOUT,YEAR,MONTH,DAY,HOUR, LATIT, LONGIT, ALTIT, ZONE, mat
     # 2, if input is to be AMASS on Card 17a
     # 3, if inputs are to be YEAR, MONTH, DAY, HOUR, LATIT, LONGIT, ZONE on Card 17a
     # 4, if inputs are to be MONTH, LATIT, DSTEP on Card 17a (for a daily calculation).
-    IMASS = '3'
+    IMASS = '1'
 
     
     # Card 17a: IMASS = 0 Zenith and azimuth
     ZENITH = ''
-    AZIM = ''
+    AZIM = AZIM
     
     # Card 17a: IMASS = 1 Elevation and Azimuth
-    ELEV = ''
+    ELEV = ELEV
     
     # Card 17a: IMASS = 2 Input air mass directly
     AMASS = ''
@@ -595,10 +596,15 @@ def SMARTSTimeLocation(IOUT,YEAR,MONTH,DAY,HOUR, LATIT, LONGIT, ALTIT, ZONE, mat
     # Card 17a: IMASS = 4 Input Moth, Latitude and DSTEP
     DSTEP = ''
 
-    output = _smartsAll(CMNT, ISPR, SPR, ALTIT, HEIGHT, LATIT, IATMOS, ATMOS, RH, TAIR, SEASON, TDAY, IH2O, W, IO3, IALT, AbO3, IGAS, ILOAD, ApCH2O, ApCH4, ApCO, ApHNO2, ApHNO3, ApNO,ApNO2, ApNO3, ApO3, ApSO2, qCO2, ISPCTR, AEROS, ALPHA1, ALPHA2, OMEGL, GG, ITURB, TAU5, BETA, BCHUEP, RANGE, VISI, TAU550, IALBDX, RHOX, ITILT, IALBDG,TILT, WAZIM,  RHOG, WLMN, WLMX, SUNCOR, SOLARC, IPRT, WPMN, WPMX, INTVL, IOUT, ICIRC, SLOPE, APERT, LIMIT, ISCAN, IFILT, WV1, WV2, STEP, FWHM, ILLUM,IUV, IMASS, ZENITH, AZIM, ELEV, AMASS, YEAR, MONTH, DAY, HOUR, LONGIT, ZONE, DSTEP)
+    output = _smartsAll(CMNT, ISPR, SPR, ALTIT, HEIGHT, LATIT, IATMOS, ATMOS, RH, TAIR, SEASON, TDAY, IH2O, 
+                            W, IO3, IALT, AbO3, IGAS, ILOAD, ApCH2O, ApCH4, ApCO, ApHNO2, ApHNO3, ApNO,ApNO2, 
+                            ApNO3, ApO3, ApSO2, qCO2, ISPCTR, AEROS, ALPHA1, ALPHA2, OMEGL, GG, ITURB, TAU5, 
+                            BETA, BCHUEP, RANGE, VISI, TAU550, IALBDX, RHOX, ITILT, IALBDG,TILT, WAZIM,  RHOG, 
+                            WLMN, WLMX, SUNCOR, SOLARC, IPRT, WPMN, WPMX, INTVL, IOUT, ICIRC, SLOPE, APERT, LIMIT, 
+                            ISCAN, IFILT, WV1, WV2, STEP, FWHM, ILLUM,IUV, IMASS, ZENITH, AZIM, ELEV, AMASS, 
+                            YEAR, MONTH, DAY, HOUR, LONGIT, ZONE, DSTEP)
 
     return output
-
 
 def SMARTSAirMass(IOUT, material='LiteSoil', AMASS = '1.0', min_wvl='280', max_wvl='4000'):
     r'''
@@ -2434,6 +2440,7 @@ def _smartsAll(CMNT, ISPR, SPR, ALTIT, HEIGHT, LATIT, IATMOS, ATMOS, RH, TAIR, S
     # Check if SMARTSPATH environment variable exists and change working
     # directory if it does.
     original_wd = None
+    
     if 'SMARTSPATH' in os.environ:
         original_wd = os.getcwd()
         os.chdir(os.environ['SMARTSPATH'])
@@ -2705,7 +2712,7 @@ def _smartsAll(CMNT, ISPR, SPR, ALTIT, HEIGHT, LATIT, IATMOS, ATMOS, RH, TAIR, S
         print('Could not find SMARTS2 executable.')
         data = None
     else:
-        p = subprocess.Popen((os.path.join(os.environ['SMARTSPATH'],command), stdin=subprocess.PIPE, stdout=open("output.txt", "w"), shell=True)
+        p = subprocess.Popen((os.path.join(os.environ['SMARTSPATH'],command)), stdin=subprocess.PIPE, stdout=open("output.txt", "w"), shell=True)
         p.wait()
         
         ## Read SMARTS 2.9.5 Output File
