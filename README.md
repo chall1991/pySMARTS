@@ -1,3 +1,7 @@
+Fixes: 
+- Linux path line 2715 in main changes to join using os.environ['SMARTSPATH'] with command to correctly reference the preset $SMARTSPATH directory. 
+
+
 <img src="docs/images/py-SMARTS.PNG" width="400">
 
 The ``smarts`` module contains functions for calling SMARTS: Simple Model of the
